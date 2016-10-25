@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ABC</title>
+
+    <script src="js/react.min.js"></script>
+    <script src="js/react-dom.min.js"></script>
+    <script src="js/browser.min.js"></script>
+</head>
+<body>
+
+<div id="container"></div>
+<script type="text/babel">
+
+
+var Comment = React.createClass({
+	getInitialState: function(){
+		return {edit:false}
+	},
+
+	updatee: function(){
+		console.log("update click")
+		this.props.UpdateComment(this.refs.NewText.value, this.props.index);
+		this.setState({edit:false});
+	},
+
+	remove: function(){
+		console.log("remove click");
+		this.props.RemoveComment(this.props.index);
+	},
+
+	edit: function(){
+		console.log("edit click")
+		this.setState({edit:!this.state.edit})
+	},
+
+	render: function(){
+		if(this.state.edit)
+		{return(
+			<div>
+			<button onClick={this.remove}>Completed</button>
+			<button onClick={this.updatee}>Save</button>
+			<textarea ref="NewText" defaultValue="What do you need to do ?"/>
+			</div>)
+		}
+		else
+		{return(
+		   <div>
+		   	<li> {this.props.children} </li>
+		   	<button onClick={this.remove}>Completed</button>
+			<button onClick={this.edit}>Edit</button>
+			</div>)
+		}
+	}
+});
+
+var Board = React.createClass({
+	getInitialState: function(){
+		return { comments: ["i.e. throw out garbage", "i.e. pay the bills"]}
+	},
+
+	newComment: function(text){
+		var arr = this.state.comments;
+		arr.push(text);
+		this.setState({comments:arr})
+
+	},	
+	
+	remove: function(i){
+		var arr = this.state.comments;
+		arr.splice(i,1);
+		this.setState({comments:arr})
+	},
+
+	update: function(NewText,i){
+		var arr = this.state.comments;
+		arr[i] = NewText;
+		this.setState({comments:arr})
+	},
+
+	eachComment: function(item,i){
+		return (<Comment key={i} index={i} RemoveComment={this.remove} UpdateComment={this.update} >{item}</Comment>);
+	},
+
+	render: function(){
+		return (<div><button onClick={this.newComment.bind(null, "Click edit")} >Add new</button>
+				{
+					this.state.comments.map(this.eachComment)
+				}
+				</div>
+			);
+		}
+});
+
+
+
+ReactDOM.render(<Board/>, document.getElementById('container'));
+
+</script>
+</body>
+</html>
